@@ -124,3 +124,21 @@ az dls fs list \
     --account jkadlstest \
     --path /<folder name>
 ```
+
+### Update the owner fo a file/folder
+```
+az dls fs access set-owner \
+   --account <account name> \
+   --path <path to an object> \
+   --group <group GUID> \
+   --owner <user GUID>
+```
+
+### Update the permission for a file/folder
+```
+az dls fs access set-permission \
+    --account <account name> \
+    --path <path to an object> \
+    --permission <permission flags>
+```
+
