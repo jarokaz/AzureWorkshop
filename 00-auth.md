@@ -6,6 +6,7 @@
 
 https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest
 
+```bash
     AZ_REPO=$(lsb_release -cs)
     echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
         sudo tee /etc/apt/sources.list.d/azure-cli.list
@@ -38,7 +39,7 @@ To sign in, use a web browser to open the page https://microsoft.com/devicelogin
     az account list-locations | grep name
 ```
 
-Table output
+#### Table output
 
 ```bash
     az account list-locations \
@@ -46,7 +47,7 @@ Table output
         --out table
 ```
 
-Resource Groups, for delegation
+### Resource Groups
 
 ```bash
     az group create --name usw-appx-net-01 --location westus2
