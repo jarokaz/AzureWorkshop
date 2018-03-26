@@ -1,9 +1,9 @@
-# Auth
+# Authentication
 
 ## Connecting to Azure
 
 ### AzureCLI
-```bash
+```python
     ls az
 ```
 
