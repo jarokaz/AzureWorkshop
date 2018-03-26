@@ -43,3 +43,9 @@ az storage account keys list \
 export AZURE_STORAGE_ACCOUNT=<account name>
 export AZURE_STORAGE_ACCESS_KEY=<access key>
 ```
+
+### Create a container
+```
+az storage container create -n <container name>
+```
+
