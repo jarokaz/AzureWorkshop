@@ -142,3 +142,11 @@ az dls fs access set-permission \
     --permission <permission flags>
 ```
 
+### Get the ACLs for a given path
+```
+az dls fs access show \
+    --account <account name> \
+    --path <path to an object> 
+```
+
+
