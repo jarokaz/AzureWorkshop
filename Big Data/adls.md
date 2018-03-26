@@ -14,6 +14,6 @@ az storage accounte create \
     --name jkstoragetest \
     --resource-group jkstoragetest \
     --sku Standard_LRS
-    ```
+```
     
     
