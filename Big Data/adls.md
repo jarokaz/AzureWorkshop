@@ -10,7 +10,7 @@ az storage blob --help
 ### Create a storage account
 Note that only Standard general-purpose storage accounts are supported with HDInsight
 ```
-az storage accounte create \
+az storage account create \
     --location westus2 \
     --name jkstoragetest \
     --resource-group jkstoragetest \
