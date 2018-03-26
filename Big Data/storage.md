@@ -68,5 +68,12 @@ az storage blob list \
     -c testcontainer
 ```
 
-
-
+### Copy blobs
+```
+az storage blob copy start \
+    --account-name <dest accountname> \
+    --account-key <dest accountkey> \
+    --destination-blob <dest file name> \
+    --destination-container <dest container> \
+    --source-uri https://sourceaccountname.blob.core.windows.net/<source container>/<source file name>
+```
