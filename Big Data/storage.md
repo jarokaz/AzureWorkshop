@@ -54,3 +54,12 @@ az storage container create -n <container name>
 az storage container list
 ```
 
+### Upload a blob to a containers
+```
+az storage blob upload \
+    --file data\train.txt \
+    --container-name <container name> \
+    --name train.txt
+```
+
+
