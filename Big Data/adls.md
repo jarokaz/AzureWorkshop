@@ -35,5 +35,6 @@ az storage account show \
 az storage account keys list \
     -n jkstoragetest \
     -g jkstoragetest \
+    -o table
 ```
 
