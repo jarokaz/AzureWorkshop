@@ -26,7 +26,7 @@ az storage account create \
 ```
 az storage account show \
     --name jkstoragetest \
-    --resource-gropu jkstoragetest \
+    --resource-group jkstoragetest \
     -o table
     
     
