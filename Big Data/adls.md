@@ -22,4 +22,11 @@ az storage account create \
     --sku Standard_LRS
 ```
     
+### Display storage account details
+```
+az storage account show \
+    --name jkstoragetest \
+    --resource-gropu jkstoragetest \
+    -o table
+    
     
