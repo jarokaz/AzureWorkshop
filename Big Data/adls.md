@@ -1,6 +1,6 @@
-# Azure Data Lake Store Walkthrough
-
-## Getting help
+# Big data storage walkthrough
+## Azure storage
+### Getting help
 ```
 az storage --help
 az storage account --help
