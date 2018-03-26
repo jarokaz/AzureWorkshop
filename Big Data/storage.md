@@ -114,6 +114,7 @@ az dls fs create \
 ```
 az dls fs upload \
     --account jkadlstest \
-    --source-path data/train.txt
+    --source-path data/train.txt \
+    --destination-path /folder/train.txt
 ```
 
