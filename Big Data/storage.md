@@ -57,9 +57,16 @@ az storage container list
 ### Upload a blob to a containers
 ```
 az storage blob upload \
-    --file data\train.txt \
+    --file data/train.txt \
     --container-name <container name> \
     --name train.txt
 ```
+
+### List blobs in a container
+```
+az storage blob list \
+    -c testcontainer
+```
+
 
 
