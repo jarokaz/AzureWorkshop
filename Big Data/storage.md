@@ -118,3 +118,9 @@ az dls fs upload \
     --destination-path /folder/train.txt
 ```
 
+### List files in a folder
+```
+az dls fs list \
+    --account jkadlstest \
+    --path /<folder name>
+```
