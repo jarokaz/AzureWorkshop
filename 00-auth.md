@@ -3,11 +3,11 @@
 ## Connecting to Azure
 
 ### AzureCLI
-```python
+```bash
     ls az
 ```
 
 ### PowerShell
-```powershell
+```posh
     Get-AzureRmSubscription
 ```
