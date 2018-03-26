@@ -8,6 +8,7 @@ az storage container --help
 az storage blob --help
 ```
 ### Create a storage account
+Note that only Standard general-purpose storage accounts are supported with HDInsight
 ```
 az storage accounte create \
     --location westus2 \
