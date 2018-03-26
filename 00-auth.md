@@ -31,8 +31,14 @@ https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest
 To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code {nnnnnnnn} to authenticate.
 
 ```bash
-    az account list | more
-    az account set
+    az account list \
+        --query "[].{SubscriptionName:name,SubscriptionID:id}" \
+        --out table
+```
+
+```bash
+    az account set -s '66992224-9117-4a57-b071-459d2f0b2b04'
+    az account set -s '0aef800c-dacc-40c8-aad0-47207100f1da'
 ```
 
 ```bash
