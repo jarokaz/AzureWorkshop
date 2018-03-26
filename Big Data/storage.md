@@ -73,7 +73,18 @@ az storage blob list \
 az storage blob copy start \
     --account-name <dest accountname> \
     --account-key <dest accountkey> \
-    --destination-blob <dest file name> \
+    --destination-blob <dest blob name> \
     --destination-container <dest container> \
-    --source-uri https://sourceaccountname.blob.core.windows.net/<source container>/<source file name>
+    --source-uri https://sourceaccountname.blob.core.windows.net/<source container>/<source blob name>
 ```
+
+### Delete a blob
+```
+az storage blob delete \
+    --container-name <container_name> 
+    --name <blob_name>
+```
+
+## Azure Data Lake Store
+
+
