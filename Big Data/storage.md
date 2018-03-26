@@ -87,4 +87,33 @@ az storage blob delete \
 
 ## Azure Data Lake Store
 
+### Create an Azure Data Lake Store account
+```
+az group create -l <location> -n <resource group name>
+az dls account create \
+    --account <account name> \
+    --resource-group <resource group name> \
+    --location centralus
+```
+### Show details
+```
+az dls account show \
+    --account <account name> \
+    --resource-group <resource group name>
+```
+
+
+### Create folders in ADLS account
+```
+az dls fs create \
+    --account <account name> \
+    --path /<folder name> \
+    --folder
+```
+### Upload a file
+```
+az dls fs upload \
+    --account jkadlstest \
+    --source-path data/train.txt
+```
 
