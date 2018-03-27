@@ -37,8 +37,7 @@ To sign in, use a web browser to open the page https://microsoft.com/devicelogin
 ```
 
 ```bash
-    az account set -s '66992224-9117-4a57-b071-459d2f0b2b04'
-    az account set -s '0aef800c-dacc-40c8-aad0-47207100f1da'
+    az account set -s <SubscriptionID>
 ```
 
 ```bash
