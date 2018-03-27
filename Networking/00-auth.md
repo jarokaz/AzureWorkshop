@@ -55,9 +55,10 @@ To sign in, use a web browser to open the page https://microsoft.com/devicelogin
 ### Resource Groups
 
 ```bash
-    az group create --name usw-appx-net-01 --location westus2
-    az group create --name usw-appx-dev-01 --location westus2
-    az group create --name usw-appx-data-01 --location westus2
+    az group create --name usw2-appx-net-01 --location westus2
+    az group create --name usw2-appx-dev-01 --location westus2
+    az group create --name usw2-appx-data-01 --location westus2
+    az group create --name usc-appx-spark-01 --location centralus
 ```
 
 ### PowerShell

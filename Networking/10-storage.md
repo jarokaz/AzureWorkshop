@@ -11,8 +11,26 @@
 ```bash
     az storage account create \
         --name 'logsusw2appxdev01' \
-        --resource-group 'usw-appx-data-01' \
+        --resource-group 'usw2-appx-data-01' \
         --location westus2 \
+        --sku Standard_LRS \
+        --kind StorageV2
+```
+
+```bash
+    az storage account create \
+        --name 'sparkusw2appxdev01' \
+        --resource-group 'usw2-appx-data-01' \
+        --location westus2 \
+        --sku Standard_LRS \
+        --kind StorageV2
+```
+
+```bash
+    az storage account create \
+        --name 'sparkuscappxdev01' \
+        --resource-group 'usw2-appx-data-01' \
+        --location centralus \
         --sku Standard_LRS \
         --kind StorageV2
 ```
@@ -22,8 +40,9 @@
 ```bash
     az storage account update \
         --name 'logsusw2appxdev01' \
-        --resource-group 'usw-appx-data-01' \
-        --default-action Deny
+        --resource-group 'usw2-appx-data-01' \
+        --default-action Deny \
+        --bypass Logging Metrics AzureServices
 ```
 
 ## Disable firewall
@@ -31,7 +50,7 @@
 ```bash
     az storage account update \
         --name 'logsusw2appxdev01' \
-        --resource-group 'usw-appx-data-01' \
+        --resource-group 'usw2-appx-data-01' \
         --default-action Allow
 ```
 
