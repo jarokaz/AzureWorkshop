@@ -65,7 +65,7 @@ az storage blob upload \
 ### List blobs in a container
 ```
 az storage blob list \
-    -c testcontainer
+    -c <container name>
 ```
 
 ### Copy blobs
