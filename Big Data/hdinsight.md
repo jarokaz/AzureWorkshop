@@ -13,7 +13,7 @@ Hue also requires SSH tunneling
 
 ### Create an SSH tunnel
 ```
-ssh -C2qTnNf -D 9876 USERNAME@CLUSTERNAME-ssh.azurehdinsight.net
+ssh -C2qTnNf -D 9876 sshuser@CLUSTERNAME-ssh.azurehdinsight.net
 ```
 
 
