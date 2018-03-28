@@ -172,7 +172,39 @@ https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/quick-create-c
         --frontend-ip-name 'loadBalancerFrontEnd' \
         --frontend-port 80 \
         --protocol tcp \
-        --probe-name 'usw2-dev-01-probe'
+        --probe-name 'usw2-web-set-01-probe'
+```
+
+## Custom Virtual Machine Image
+
+https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-upload-generic
+
+https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-upload-centos
+
+https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-upload-ubuntu
+
+https://docs.microsoft.com/en-us/azure/virtual-machines/linux/upload-vhd
+
+```bash
+    sudo yum list WALinuxAgent
+
+    sudo yum install WALinuxAgent
+```
+
+```bash
+    az storage account create \
+        --name 'imagesusw2dev01' \
+        --resource-group 'rg1' \
+        --location westus2 \
+        --sku Standard_LRS \
+        --kind StorageV2
+```
+
+```bash
+    az disk create \
+        --resource-group myResourceGroup \
+        --name myManagedDisk \
+        --source https://mystorageaccount.blob.core.windows.net/mydisks/myDisk.vhd
 ```
 
 ## Tags

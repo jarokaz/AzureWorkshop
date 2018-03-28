@@ -32,6 +32,8 @@ https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest
 
 To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code {nnnnnnnn} to authenticate.
 
+http://jmespath.org/
+
 ```bash
     az account list \
         --query "[].{SubscriptionName:name,SubscriptionID:id}" \
