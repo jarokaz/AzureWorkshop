@@ -28,5 +28,5 @@ curl -u admin -G "https://jkhdidemo1.azurehdinsight.net/api/v1/clusters/jkhdidem
 
 ## Get the directory within the store that is the root for HDInsight
 ```
-curl -u admin -G "https://CLUSTERNAME.azurehdinsight.net/api/v1/clusters/CLUSTERNAME/configurations/service_config_versions?service_name=HDFS&service_config_version=1" | jq '.items[].configurations[].properties["dfs.adls.home.mountpoint"] | select(. != null)'
+curl -u admin -G "https://jkhdidemo1.azurehdinsight.net/api/v1/clusters/jkhdidemo1/configurations/service_config_versions?service_name=HDFS&service_config_version=1" | jq '.items[].configurations[].properties["dfs.adls.home.mountpoint"] | select(. != null)'
 ```
