@@ -70,30 +70,50 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
     - nodejs index.js
 ```
 
-### Availability Set
+### app Availability Set
+
+```bash
+    az vm availability-set create \
+        --resource-group 'rg1' \
+        --name 'usw2-app-set-01' \
+        --platform-fault-domain-count 2 \
+        --platform-update-domain-count 5
+```
+
+```bash
+    for i in `seq 1 9`; do
+        az network nic create \
+            --resource-group rg1 \
+            --vnet-name 'usw2-dev-01' \
+            --subnet 'app' \
+            --name usw2-app-0$i-nic1
+    done
+```
+
+```bash
+    for i in `seq 1 2`; do
+        az vm create \
+            --name usw2-app-0$i \
+            --resource-group 'rg1' \
+            --nics usw2-app-0$i-nic1 \
+            --image UbuntuLTS \
+            --size Standard_F2s \
+            --availability-set 'usw2-app-set-01' \
+            --public-ip-address "" \
+            --nsg '' \
+            --custom-data cloud-init.txt
+    done
+```
+
+### web Availability Set
 
 ```bash
     az vm availability-set create \
         --resource-group 'rg1' \
         --name 'usw2-web-set-01' \
         --platform-fault-domain-count 2 \
-        --platform-update-domain-count 2
+        --platform-update-domain-count 5
 ```
-
-```bash
-    az vm create \
-        --name 'usw2-web-01' \
-        --resource-group 'rg1' \
-        --image UbuntuLTS \
-        --size Standard_F4s \
-        --vnet-name 'usw2-dev-01' \
-        --subnet 'web' \
-        --availability-set 'usw2-web-set-01' \
-        --nsg '' \
-        --custom-data cloud-init.txt
-```
-
-### Use an existing network interface
 
 ```bash
     for i in `seq 1 5`; do
@@ -112,13 +132,49 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
             --resource-group 'rg1' \
             --nics usw2-web-0$i-nic1 \
             --image UbuntuLTS \
-            --size Standard_F4s \
+            --size Standard_F2s \
             --availability-set 'usw2-web-set-01' \
             --public-ip-address "" \
             --nsg '' \
             --custom-data cloud-init.txt
     done
 ```
+
+### data Availability Set
+
+```bash
+    az vm availability-set create \
+        --resource-group 'rg1' \
+        --name 'usw2-data-set-01' \
+        --platform-fault-domain-count 2 \
+        --platform-update-domain-count 2
+```
+
+```bash
+    for i in `seq 1 2`; do
+        az network nic create \
+            --resource-group rg1 \
+            --vnet-name 'usw2-dev-01' \
+            --subnet 'data' \
+            --name usw2-data-0$i-nic1
+    done
+```
+
+```bash
+    for i in `seq 1 2`; do
+        az vm create \
+            --name usw2-data-0$i \
+            --resource-group 'rg1' \
+            --nics usw2-data-0$i-nic1 \
+            --image UbuntuLTS \
+            --size Standard_F2s \
+            --availability-set 'usw2-data-set-01' \
+            --public-ip-address "" \
+            --nsg '' \
+            --custom-data cloud-init.txt
+    done
+```
+
 
 ```bash
     az vm open-port --port 80 --resource-group rg1 --name 'usw2-web-01'

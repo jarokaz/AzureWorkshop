@@ -135,6 +135,8 @@ https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
 
 ```bash
     az network nsg create --resource-group 'rg1' --name 'usw2-dev-01-web'
+    az network nsg create --resource-group 'rg1' --name 'usw2-dev-01-app'
+    az network nsg create --resource-group 'rg1' --name 'usw2-dev-01-data'
 ```
 
 ### Associate the 'web' network security group (nsg) with the corresponding subnet
@@ -148,6 +150,10 @@ https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
 ```
 
 ### Add 'app' subnet and associate corresponding network security group
+
+```bash
+    az network nsg create --resource-group 'rg1' --name 'usw2-dev-01-app'
+```
 
 ```bash
     az network vnet subnet create \
@@ -226,7 +232,7 @@ https://docs.microsoft.com/en-us/azure/dns/private-dns-getstarted-cli
         --registration-vnets usw2-dev-01
 ```
 
-### Load Balancer
+### Create an external load balancer
 
 https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-overview
 
@@ -235,45 +241,39 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
 ```bash
     az network public-ip create \
         --resource-group rg1 \
-        --name 'usw2-web-01-ip' \
-        --sku standard
-
-    az network public-ip create \
-        --resource-group rg1 \
-        --name 'usw2-web-02-ip' \
-        --sku standard
-
-    az network public-ip create \
-        --resource-group rg1 \
-        --name 'usw2-dev-01-elb' \
+        --name 'usw2-dev-01-elb3' \
         --sku standard
 
     az network lb create \
         --resource-group 'rg1' \
         --name 'usw2-dev-01-elb' \
-        --frontend-ip-name 'usw2-dev-01-fe' \
-        --backend-pool-name 'usw2-dev-01-be' \
-        --public-ip-address 'usw2-dev-01-elb' \
+        --frontend-ip-name 'usw2-dev-01-elb-fe' \
+        --backend-pool-name 'usw2-dev-01-elb-be' \
+        --public-ip-address 'usw2-dev-01-elb3' \
         --sku standard
 
     az network lb probe create \
         --resource-group 'rg1' \
         --lb-name 'usw2-dev-01-elb' \
-        --name 'usw2-dev-01-probe' \
+        --name 'usw2-dev-01-elb-probe' \
         --protocol tcp \
         --port 80
 
     az network lb rule create \
         --resource-group 'rg1' \
         --lb-name 'usw2-dev-01-elb' \
-        --name 'usw2-dev-01-rule' \
+        --name 'usw2-dev-01-elb-rule' \
         --protocol tcp \
         --frontend-port 80 \
         --backend-port 80 \
-        --frontend-ip-name 'usw2-dev-01-fe' \
-        --backend-pool-name 'usw2-dev-01-be' \
-        --probe-name 'usw2-dev-01-probe'
+        --frontend-ip-name 'usw2-dev-01-elb-fe' \
+        --backend-pool-name 'usw2-dev-01-elb-be' \
+        --probe-name 'usw2-dev-01-elb-probe'
+```
 
+### Add network interface to the elb back-end pool
+
+```bash
     for i in `seq 1 2`; do
         az network nic ip-config address-pool add \
             --lb-name 'usw2-dev-01-elb' \
@@ -285,14 +285,14 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
 
     az network nic ip-config address-pool add \
         --lb-name 'usw2-dev-01-elb' \
-        --address-pool 'usw2-dev-01-be' \
+        --address-pool 'usw2-dev-01-elb-be' \
         --nic-name 'usw2-web-01-nic1' \
         --ip-config-name 'ipconfig1' \
         --resource-group 'rg1'
 
     az network nic ip-config address-pool add \
         --lb-name 'usw2-dev-01-elb' \
-        --address-pool 'usw2-dev-01-be' \
+        --address-pool 'usw2-dev-01-elb-be' \
         --nic-name 'usw2-web-02-nic1' \
         --ip-config-name 'ipconfig1' \
         --resource-group 'rg1'
@@ -300,7 +300,101 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
     az network lb address-pool show \
         --resource-group 'rg1' \
         --lb-name 'usw2-dev-01-elb' \
-        --name 'usw2-dev-01-be' \
+        --name 'usw2-dev-01-elb-be' \
         --query backendIpConfigurations \
         --output tsv | cut -f4
+
+    az network nic ip-config address-pool remove \
+        --lb-name 'usw2-dev-01-elb' \
+        --address-pool 'usw2-dev-01-elb-be' \
+        --nic-name 'usw2-web-01-nic1' \
+        --ip-config-name 'ipconfig1' \
+        --resource-group 'rg1'
+
+    az network nic ip-config address-pool remove \
+        --lb-name 'usw2-dev-01-elb' \
+        --address-pool 'usw2-dev-01-elb-be' \
+        --nic-name 'usw2-web-02-nic1' \
+        --ip-config-name 'ipconfig1' \
+        --resource-group 'rg1'
+```
+
+### Internal Load Balancer
+
+```bash
+    az network lb create \
+        --resource-group 'rg1' \
+        --name 'usw2-dev-01-ilb' \
+        --frontend-ip-name 'usw2-dev-01-ilb-fe' \
+        --private-ip-address 172.16.20.100 \
+        --backend-pool-name 'usw2-dev-01-ilb-be' \
+        --vnet-name 'usw2-dev-01' \
+        --subnet 'app' \
+        --sku standard
+
+    az network lb probe create \
+        --resource-group 'rg1' \
+        --lb-name 'usw2-dev-01-ilb' \
+        --name 'usw2-dev-01-ilb-probe' \
+        --protocol tcp \
+        --port 80
+
+    az network lb rule create \
+        --resource-group 'rg1' \
+        --lb-name 'usw2-dev-01-ilb' \
+        --name 'usw2-dev-01-ilb-rule' \
+        --protocol tcp \
+        --frontend-port 80 \
+        --backend-port 80 \
+        --frontend-ip-name 'usw2-dev-01-ilb-fe' \
+        --backend-pool-name 'usw2-dev-01-ilb-be' \
+        --probe-name 'usw2-dev-01-ilb-probe'
+```
+
+### Add network interface to the ilb back-end pool
+
+```bash
+    az network nic ip-config address-pool add \
+        --lb-name 'usw2-dev-01-ilb' \
+        --address-pool 'usw2-dev-01-ilb-be' \
+        --nic-name 'usw2-app-01-nic1' \
+        --ip-config-name 'ipconfig1' \
+        --resource-group 'rg1'
+
+    az network nic ip-config address-pool add \
+        --lb-name 'usw2-dev-01-ilb' \
+        --address-pool 'usw2-dev-01-ilb-be' \
+        --nic-name 'usw2-app-02-nic1' \
+        --ip-config-name 'ipconfig1' \
+        --resource-group 'rg1'
+```
+
+## Application Gateway
+
+### Add 'data' subnet and associate corresponding network security group
+
+```bash
+    az network vnet subnet create \
+        --name 'appgw' \
+        --resource-group 'rg1' \
+        --vnet-name 'usw2-dev-01' \
+        --address-prefix 172.16.1.0/24 \
+        --network-security-group ''
+
+    az network public-ip create \
+        --resource-group rg1 \
+        --name 'usw2-dev-01-gw2' \
+        --sku basic
+
+    az network application-gateway create \
+        --name 'usw2-dev-01-gw' \
+        --location westus2 \
+        --resource-group 'rg1' \
+        --capacity 2 \
+        --sku WAF_Medium \
+        --http-settings-cookie-based-affinity Enabled \
+        --public-ip-address 'usw2-dev-01-gw2' \
+        --vnet-name 'usw2-dev-01' \
+        --subnet 'appgw' \
+        --servers "172.16.30.4" "172.16.30.5"
 ```
