@@ -81,21 +81,21 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
 ```
 
 ```bash
-    for i in `seq 1 9`; do
+    for i in `seq -w 01 09`; do
         az network nic create \
             --resource-group rg1 \
             --vnet-name 'usw2-dev-01' \
             --subnet 'app' \
-            --name usw2-app-0$i-nic1
+            --name usw2-app-$i-nic1
     done
 ```
 
 ```bash
-    for i in `seq 1 2`; do
+    for i in `seq -w 01 02`; do
         az vm create \
-            --name usw2-app-0$i \
+            --name usw2-app-$i \
             --resource-group 'rg1' \
-            --nics usw2-app-0$i-nic1 \
+            --nics usw2-app-$i-nic1 \
             --image UbuntuLTS \
             --size Standard_F2s \
             --availability-set 'usw2-app-set-01' \
@@ -116,21 +116,21 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
 ```
 
 ```bash
-    for i in `seq 1 5`; do
+    for i in `seq -w 01 05`; do
         az network nic create \
             --resource-group rg1 \
             --vnet-name 'usw2-dev-01' \
             --subnet 'web' \
-            --name usw2-web-0$i-nic1
+            --name usw2-web-$i-nic1
     done
 ```
 
 ```bash
-    for i in `seq 1 2`; do
+    for i in `seq -w 01 02`; do
         az vm create \
-            --name usw2-web-0$i \
+            --name usw2-web-$i \
             --resource-group 'rg1' \
-            --nics usw2-web-0$i-nic1 \
+            --nics usw2-web-$i-nic1 \
             --image UbuntuLTS \
             --size Standard_F2s \
             --availability-set 'usw2-web-set-01' \
@@ -151,24 +151,60 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
 ```
 
 ```bash
-    for i in `seq 1 2`; do
+    for i in `seq -w 01 02`; do
         az network nic create \
             --resource-group rg1 \
             --vnet-name 'usw2-dev-01' \
             --subnet 'data' \
-            --name usw2-data-0$i-nic1
+            --name usw2-data-$i-nic1
     done
 ```
 
 ```bash
-    for i in `seq 1 2`; do
+    for i in `seq -w 01 02`; do
         az vm create \
-            --name usw2-data-0$i \
+            --name usw2-data-$i \
             --resource-group 'rg1' \
-            --nics usw2-data-0$i-nic1 \
+            --nics usw2-data-$i-nic1 \
             --image UbuntuLTS \
             --size Standard_F2s \
             --availability-set 'usw2-data-set-01' \
+            --public-ip-address "" \
+            --nsg '' \
+            --custom-data cloud-init.txt
+    done
+```
+
+
+### Dev-02 Availability Set (private dns zone)
+
+```bash
+    az vm availability-set create \
+        --resource-group 'rg1' \
+        --name 'usw2-web-set-02' \
+        --platform-fault-domain-count 2 \
+        --platform-update-domain-count 5
+```
+
+```bash
+    for i in `seq 10 11`; do
+        az network nic create \
+            --resource-group rg1 \
+            --vnet-name 'usw2-dev-02' \
+            --subnet 'web' \
+            --name usw2-web-$i-nic1
+    done
+```
+
+```bash
+    for i in `seq 10 11`; do
+        az vm create \
+            --name usw2-web-$i \
+            --resource-group 'rg1' \
+            --nics usw2-web-$i-nic1 \
+            --image UbuntuLTS \
+            --size Standard_F2s \
+            --availability-set 'usw2-web-set-02' \
             --public-ip-address "" \
             --nsg '' \
             --custom-data cloud-init.txt
@@ -258,9 +294,20 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/upload-vhd
 
 ```bash
     az disk create \
-        --resource-group myResourceGroup \
-        --name myManagedDisk \
-        --source https://mystorageaccount.blob.core.windows.net/mydisks/myDisk.vhd
+        --resource-group rg1 \
+        --name centos \
+        --source https://imagesusw2dev01.blob.core.windows.net/disk2/centos.vhd
+
+    az vm create \
+        --name usw2-app-08 \
+        --resource-group 'rg1' \
+        --nics usw2-app-08-nic1 \
+        --os-type linux \
+        --attach-os-disk centos \
+        --size Standard_F2s \
+        --public-ip-address "" \
+        --nsg '' \
+        --custom-data cloud-init.txt
 ```
 
 ## Tags

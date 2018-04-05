@@ -221,15 +221,15 @@ https://docs.microsoft.com/en-us/azure/dns/private-dns-getstarted-cli
         -g rg1 \
         -n dev.local \
         --zone-type Private \
-        --resolution-vnets usw2-dev-02
         --registration-vnets usw2-dev-02
+```
 
-
+```bash
     az network dns zone create \
         -g rg1 \
-        -n mtc.local \
+        -n dev.local \
         --zone-type Private \
-        --registration-vnets usw2-dev-01
+        --registration-vnets usw2-dev-02
 ```
 
 ### Create an external load balancer
