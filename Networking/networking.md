@@ -32,8 +32,6 @@ https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest
 
 To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code {nnnnnnnn} to authenticate.
 
-http://jmespath.org/
-
 ```bash
     az account list \
         --query "[].{SubscriptionName:name,SubscriptionID:id}" \
@@ -44,11 +42,15 @@ http://jmespath.org/
     az account set -s <SubscriptionID>
 ```
 
+#### Show Azure Regions
+
 ```bash
     az account list-locations | grep name
 ```
 
-##### Table output
+##### Show Regions (Table output)
+
+http://jmespath.org/
 
 ```bash
     az account list-locations \
@@ -60,6 +62,8 @@ http://jmespath.org/
 
 ```bash
     az group create --name 'rg1' --location westus2
+
+    az group list --out table
 ```
 
 ## Storage
@@ -113,10 +117,6 @@ https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
 ### Show Existing Networks
 
 ```bash
-    az network vnet list
-```
-
-```bash
     az network vnet list --out table
 ```
 
@@ -131,12 +131,24 @@ https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
         --subnet-prefix 172.16.10.0/24
 ```
 
+#### Show the virtual networks
+
+```bash
+    az network vnet list --out table
+```
+
 ### Create a network security group (nsg) for each subnet
 
 ```bash
     az network nsg create --resource-group 'rg1' --name 'usw2-dev-01-web'
     az network nsg create --resource-group 'rg1' --name 'usw2-dev-01-app'
     az network nsg create --resource-group 'rg1' --name 'usw2-dev-01-data'
+```
+
+#### Show the network security groups
+
+```bash
+    az network vnet list --out table
 ```
 
 ### Associate the 'web' network security group (nsg) with the corresponding subnet
@@ -151,9 +163,6 @@ https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
 
 ### Add 'app' subnet and associate corresponding network security group
 
-```bash
-    az network nsg create --resource-group 'rg1' --name 'usw2-dev-01-app'
-```
 
 ```bash
     az network vnet subnet create \
@@ -232,18 +241,24 @@ https://docs.microsoft.com/en-us/azure/dns/private-dns-getstarted-cli
         --registration-vnets usw2-dev-02
 ```
 
-### Create an external load balancer
+### External load balancer
 
 https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-overview
 
 https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-connections
+
+#### External load balancer public IP address
 
 ```bash
     az network public-ip create \
         --resource-group rg1 \
         --name 'usw2-dev-01-elb3' \
         --sku standard
+```
 
+#### Create the external load balancer
+
+```bash
     az network lb create \
         --resource-group 'rg1' \
         --name 'usw2-dev-01-elb' \
@@ -251,14 +266,22 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
         --backend-pool-name 'usw2-dev-01-elb-be' \
         --public-ip-address 'usw2-dev-01-elb3' \
         --sku standard
+```
 
+#### Create the external load balancer health probe
+
+```bash
     az network lb probe create \
         --resource-group 'rg1' \
         --lb-name 'usw2-dev-01-elb' \
         --name 'usw2-dev-01-elb-probe' \
         --protocol tcp \
         --port 80
+```
 
+#### Create the external load balancing rule
+
+```bash
     az network lb rule create \
         --resource-group 'rg1' \
         --lb-name 'usw2-dev-01-elb' \
@@ -271,18 +294,9 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
         --probe-name 'usw2-dev-01-elb-probe'
 ```
 
-### Add network interface to the elb back-end pool
+#### Add the network interface to the external load balancer back-end pool
 
 ```bash
-    for i in `seq 1 2`; do
-        az network nic ip-config address-pool add \
-            --lb-name 'usw2-dev-01-elb' \
-            --address-pool 'usw2-dev-01-be' \
-            --nic-name usw2-web-0$i-nic1 \
-            --ip-config-name 'ipconfig1' \
-            --resource-group 'rg1'
-    done
-
     az network nic ip-config address-pool add \
         --lb-name 'usw2-dev-01-elb' \
         --address-pool 'usw2-dev-01-elb-be' \
@@ -296,14 +310,22 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
         --nic-name 'usw2-web-02-nic1' \
         --ip-config-name 'ipconfig1' \
         --resource-group 'rg1'
+```
 
+#### Show the load balancer address pool
+
+```bash
     az network lb address-pool show \
         --resource-group 'rg1' \
         --lb-name 'usw2-dev-01-elb' \
         --name 'usw2-dev-01-elb-be' \
         --query backendIpConfigurations \
         --output tsv | cut -f4
+```
 
+#### Remove the network interface to the external load balancer back-end pool
+
+```bash
     az network nic ip-config address-pool remove \
         --lb-name 'usw2-dev-01-elb' \
         --address-pool 'usw2-dev-01-elb-be' \
@@ -321,6 +343,12 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
 
 ### Internal Load Balancer
 
+https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-overview
+
+https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-connections
+
+#### Create the external load balancer
+
 ```bash
     az network lb create \
         --resource-group 'rg1' \
@@ -331,14 +359,18 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
         --vnet-name 'usw2-dev-01' \
         --subnet 'app' \
         --sku standard
+```
 
+``` bash
     az network lb probe create \
         --resource-group 'rg1' \
         --lb-name 'usw2-dev-01-ilb' \
         --name 'usw2-dev-01-ilb-probe' \
         --protocol tcp \
         --port 80
+```
 
+``` bash
     az network lb rule create \
         --resource-group 'rg1' \
         --lb-name 'usw2-dev-01-ilb' \
