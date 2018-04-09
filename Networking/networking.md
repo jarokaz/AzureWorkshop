@@ -201,7 +201,7 @@ https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
         --name 'usw2-dev-01-vpn' \
         --resource-group 'rg1' \
         --dns-name 'usw2-dev-01-vpn' \
-        --allocation-method Dynamic \
+        --allocation-method Static \
         --sku standard
 ```
 
