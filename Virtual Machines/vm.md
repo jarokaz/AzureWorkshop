@@ -17,7 +17,7 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
 ```bash
     az vm create \
         --name 'usw2-web-01' \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --image UbuntuLTS \
         --generate-ssh-keys
 ```
@@ -74,7 +74,7 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
 
 ```bash
     az vm availability-set create \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --name 'usw2-app-set-01' \
         --platform-fault-domain-count 2 \
         --platform-update-domain-count 5
@@ -94,7 +94,7 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
     for i in `seq -w 01 02`; do
         az vm create \
             --name usw2-app-$i \
-            --resource-group 'rg1' \
+            --resource-group '<resource group name>' \
             --nics usw2-app-$i-nic1 \
             --image UbuntuLTS \
             --size Standard_F2s \
@@ -109,7 +109,7 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
 
 ```bash
     az vm availability-set create \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --name 'usw2-web-set-01' \
         --platform-fault-domain-count 2 \
         --platform-update-domain-count 5
@@ -129,7 +129,7 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
     for i in `seq -w 01 02`; do
         az vm create \
             --name usw2-web-$i \
-            --resource-group 'rg1' \
+            --resource-group '<resource group name>' \
             --nics usw2-web-$i-nic1 \
             --image UbuntuLTS \
             --size Standard_F2s \
@@ -144,7 +144,7 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
 
 ```bash
     az vm availability-set create \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --name 'usw2-data-set-01' \
         --platform-fault-domain-count 2 \
         --platform-update-domain-count 2
@@ -164,7 +164,7 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
     for i in `seq -w 01 02`; do
         az vm create \
             --name usw2-data-$i \
-            --resource-group 'rg1' \
+            --resource-group '<resource group name>' \
             --nics usw2-data-$i-nic1 \
             --image UbuntuLTS \
             --size Standard_F2s \
@@ -179,14 +179,14 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
 
 ```bash
     az vm list-vm-resize-options \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --name 'usw2-web-01' \
         --query [].name
 ```
 
 ```bash
     az vm resize \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --name 'usw2-web-01' \
         --size Standard_DS4_v2
 ```
@@ -273,7 +273,7 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/upload-vhd
 ```bash
     az storage account create \
         --name 'imagesusw2dev01' \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --location westus2 \
         --sku Standard_LRS \
         --kind StorageV2
@@ -283,7 +283,7 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/upload-vhd
 
 ```bash
     az disk create \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --name centos \
         --source https://imagesusw2dev01.blob.core.windows.net/disk2/centos.vhd
 ```
@@ -293,7 +293,7 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/upload-vhd
 ```bash
     az vm create \
         --name usw2-app-08 \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --nics 'usw2-app-08-nic1' \
         --os-type linux \
         --attach-os-disk centos \
@@ -306,7 +306,7 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/upload-vhd
 ### Metadata Tags
 
 ```bash
-    az resource tag -n 'rg1' \
+    az resource tag -n '<resource group name>' \
         -g myResourceGroup \
         --tags Dept=IT Environment=Test Project=Documentation \
         --resource-type "Microsoft.Compute/virtualMachines"

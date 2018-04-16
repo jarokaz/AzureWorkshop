@@ -1,118 +1,8 @@
 # Networking
 
-## Authentication
-
-### Connecting to Azure
-
-#### AzureCLI
-
-https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest
-
-```bash
-    AZ_REPO=$(lsb_release -cs)
-    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
-        sudo tee /etc/apt/sources.list.d/azure-cli.list
-```
-
-```bash
-    sudo apt-key adv --keyserver packages.microsoft.com --recv-keys 52E16F86FEE04B979B07E28DB02C46DF417A0893
-    sudo apt-get install apt-transport-https
-    sudo apt-get update && sudo apt-get install azure-cli
-```
-
-```bash
-    sudo apt-get update && sudo apt-get upgrade
-```
-
-#### Login
-
-```bash
-    az login
-```
-
-To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code {nnnnnnnn} to authenticate.
-
-```bash
-    az account list \
-        --query "[].{SubscriptionName:name,SubscriptionID:id}" \
-        --out table
-```
-
-```bash
-    az account set -s <SubscriptionID>
-```
-
-#### Show Azure Regions
-
-```bash
-    az account list-locations | grep name
-```
-
-##### Show Regions (Table output)
-
-http://jmespath.org/
-
-```bash
-    az account list-locations \
-        --query "[].{Region:name}" \
-        --out table
-```
-
-#### Resource Groups
-
-```bash
-    az group create --name 'rg1' --location westus2
-
-    az group list --out table
-```
-
-## Storage
-
-### Verify storage account name availability
-
-```bash
-    az storage account check-name --name 'logsusw2dev01'
-```
-
-### Create a storage account to hold log files and diagnostics data
-
-```bash
-    az storage account create \
-        --name 'logsusw2dev01' \
-        --resource-group 'rg1' \
-        --location westus2 \
-        --sku Standard_LRS \
-        --kind StorageV2
-```
-
-### Enable firewall
-
-```bash
-    az storage account update \
-        --name 'logsusw2appxdev01' \
-        --resource-group 'rg1' \
-        --default-action Deny \
-        --bypass Logging Metrics AzureServices
-```
-
-### Disable firewall
-
-```bash
-    az storage account update \
-        --name 'logsusw2appxdev01' \
-        --resource-group 'rg1' \
-        --default-action Allow
-```
-
-### Add Network Rules
-
-https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security
-
-https://docs.microsoft.com/en-us/cli/azure/storage/account/network-rule?view=azure-cli-latest
-
 ## Networks
 
-https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
+Azure network topology reference and guidance: https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
 
 ### Show Existing Networks
 
@@ -125,7 +15,7 @@ https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
 ```bash
     az network vnet create \
         --name 'usw2-dev-01' \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --address-prefix 172.16.0.0/16 \
         --subnet-name web \
         --subnet-prefix 172.16.10.0/24
@@ -140,9 +30,9 @@ https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
 ### Create a network security group (nsg) for each subnet
 
 ```bash
-    az network nsg create --resource-group 'rg1' --name 'usw2-dev-01-web'
-    az network nsg create --resource-group 'rg1' --name 'usw2-dev-01-app'
-    az network nsg create --resource-group 'rg1' --name 'usw2-dev-01-data'
+    az network nsg create --resource-group '<resource group name>' --name 'usw2-dev-01-web'
+    az network nsg create --resource-group '<resource group name>' --name 'usw2-dev-01-app'
+    az network nsg create --resource-group '<resource group name>' --name 'usw2-dev-01-data'
 ```
 
 #### Show the network security groups
@@ -156,18 +46,17 @@ https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
 ```bash
     az network vnet subnet update \
         --name 'web' \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --vnet-name 'usw2-dev-01' \
         --network-security-group 'usw2-dev-01-web'
 ```
 
 ### Add 'app' subnet and associate corresponding network security group
 
-
 ```bash
     az network vnet subnet create \
         --name 'app' \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --vnet-name 'usw2-dev-01' \
         --address-prefix 172.16.20.0/24 \
         --network-security-group 'usw2-dev-01-app'
@@ -178,7 +67,7 @@ https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
 ```bash
     az network vnet subnet create \
         --name 'data' \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --vnet-name 'usw2-dev-01' \
         --address-prefix 172.16.30.0/24 \
         --network-security-group 'usw2-dev-01-data'
@@ -189,17 +78,19 @@ https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
 ```bash
     az network vnet subnet create \
         --name 'gatewaysubnet' \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --vnet-name 'usw2-dev-01' \
         --address-prefix 172.16.0.0/24
 ```
 
 ### Public IP Address for the VPN gateway
 
+**NOTE**: You will need to provide a globally unique -dns-name parameter.
+
 ```bash
     az network public-ip create \
         --name 'usw2-dev-01-vpn' \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --dns-name 'usw2-dev-01-vpn' \
         --allocation-method Static \
         --sku standard
@@ -210,7 +101,7 @@ https://docs.microsoft.com/en-us/azure/networking/networking-virtual-datacenter
 ```bash
     az network vnet-gateway create \
         --name 'usw2-dev-01-vpn' \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --address-prefixes 192.168.16.0/24 \
         --vnet 'usw2-dev-01' \
         --public-ip-address 'usw2-dev-01-vpn' \
@@ -260,7 +151,7 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
 
 ```bash
     az network lb create \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --name 'usw2-dev-01-elb' \
         --frontend-ip-name 'usw2-dev-01-elb-fe' \
         --backend-pool-name 'usw2-dev-01-elb-be' \
@@ -272,7 +163,7 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
 
 ```bash
     az network lb probe create \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --lb-name 'usw2-dev-01-elb' \
         --name 'usw2-dev-01-elb-probe' \
         --protocol tcp \
@@ -283,7 +174,7 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
 
 ```bash
     az network lb rule create \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --lb-name 'usw2-dev-01-elb' \
         --name 'usw2-dev-01-elb-rule' \
         --protocol tcp \
@@ -302,21 +193,21 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
         --address-pool 'usw2-dev-01-elb-be' \
         --nic-name 'usw2-web-01-nic1' \
         --ip-config-name 'ipconfig1' \
-        --resource-group 'rg1'
+        --resource-group '<resource group name>'
 
     az network nic ip-config address-pool add \
         --lb-name 'usw2-dev-01-elb' \
         --address-pool 'usw2-dev-01-elb-be' \
         --nic-name 'usw2-web-02-nic1' \
         --ip-config-name 'ipconfig1' \
-        --resource-group 'rg1'
+        --resource-group '<resource group name>'
 ```
 
 #### Show the load balancer address pool
 
 ```bash
     az network lb address-pool show \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --lb-name 'usw2-dev-01-elb' \
         --name 'usw2-dev-01-elb-be' \
         --query backendIpConfigurations \
@@ -331,14 +222,14 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
         --address-pool 'usw2-dev-01-elb-be' \
         --nic-name 'usw2-web-01-nic1' \
         --ip-config-name 'ipconfig1' \
-        --resource-group 'rg1'
+        --resource-group '<resource group name>'
 
     az network nic ip-config address-pool remove \
         --lb-name 'usw2-dev-01-elb' \
         --address-pool 'usw2-dev-01-elb-be' \
         --nic-name 'usw2-web-02-nic1' \
         --ip-config-name 'ipconfig1' \
-        --resource-group 'rg1'
+        --resource-group '<resource group name>'
 ```
 
 ### Internal Load Balancer
@@ -351,7 +242,7 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
 
 ```bash
     az network lb create \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --name 'usw2-dev-01-ilb' \
         --frontend-ip-name 'usw2-dev-01-ilb-fe' \
         --private-ip-address 172.16.20.100 \
@@ -363,7 +254,7 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
 
 ``` bash
     az network lb probe create \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --lb-name 'usw2-dev-01-ilb' \
         --name 'usw2-dev-01-ilb-probe' \
         --protocol tcp \
@@ -372,7 +263,7 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
 
 ``` bash
     az network lb rule create \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --lb-name 'usw2-dev-01-ilb' \
         --name 'usw2-dev-01-ilb-rule' \
         --protocol tcp \
@@ -391,14 +282,14 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
         --address-pool 'usw2-dev-01-ilb-be' \
         --nic-name 'usw2-app-01-nic1' \
         --ip-config-name 'ipconfig1' \
-        --resource-group 'rg1'
+        --resource-group '<resource group name>'
 
     az network nic ip-config address-pool add \
         --lb-name 'usw2-dev-01-ilb' \
         --address-pool 'usw2-dev-01-ilb-be' \
         --nic-name 'usw2-app-02-nic1' \
         --ip-config-name 'ipconfig1' \
-        --resource-group 'rg1'
+        --resource-group '<resource group name>'
 ```
 
 ## Application Gateway
@@ -408,7 +299,7 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
 ```bash
     az network vnet subnet create \
         --name 'appgw' \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --vnet-name 'usw2-dev-01' \
         --address-prefix 172.16.1.0/24 \
         --network-security-group ''
@@ -421,7 +312,7 @@ https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-outbound-conn
     az network application-gateway create \
         --name 'usw2-dev-01-gw' \
         --location westus2 \
-        --resource-group 'rg1' \
+        --resource-group '<resource group name>' \
         --capacity 2 \
         --sku WAF_Medium \
         --http-settings-cookie-based-affinity Enabled \
