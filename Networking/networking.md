@@ -14,7 +14,7 @@ Azure network topology reference and guidance: https://docs.microsoft.com/en-us/
 
 ```bash
     az network vnet create \
-        --name 'usw2-dev-01' \
+        --name '<vnet name>' \
         --resource-group '<resource group name>' \
         --address-prefix 172.16.0.0/16 \
         --subnet-name web \
@@ -30,9 +30,9 @@ Azure network topology reference and guidance: https://docs.microsoft.com/en-us/
 ### Create a network security group (nsg) for each subnet
 
 ```bash
-    az network nsg create --resource-group '<resource group name>' --name 'usw2-dev-01-web'
-    az network nsg create --resource-group '<resource group name>' --name 'usw2-dev-01-app'
-    az network nsg create --resource-group '<resource group name>' --name 'usw2-dev-01-data'
+    az network nsg create --resource-group '<resource group name>' --name '<vnet name>-web'
+    az network nsg create --resource-group '<resource group name>' --name '<vnet name>-app'
+    az network nsg create --resource-group '<resource group name>' --name '<vnet name>-data'
 ```
 
 #### Show the network security groups
@@ -47,8 +47,8 @@ Azure network topology reference and guidance: https://docs.microsoft.com/en-us/
     az network vnet subnet update \
         --name 'web' \
         --resource-group '<resource group name>' \
-        --vnet-name 'usw2-dev-01' \
-        --network-security-group 'usw2-dev-01-web'
+        --vnet-name '<vnet name>' \
+        --network-security-group '<vnet name>-web'
 ```
 
 ### Add 'app' subnet and associate corresponding network security group
@@ -57,9 +57,9 @@ Azure network topology reference and guidance: https://docs.microsoft.com/en-us/
     az network vnet subnet create \
         --name 'app' \
         --resource-group '<resource group name>' \
-        --vnet-name 'usw2-dev-01' \
+        --vnet-name '<vnet name>' \
         --address-prefix 172.16.20.0/24 \
-        --network-security-group 'usw2-dev-01-app'
+        --network-security-group '<vnet name>-app'
 ```
 
 ### Add 'data' subnet and associate corresponding network security group
@@ -68,9 +68,9 @@ Azure network topology reference and guidance: https://docs.microsoft.com/en-us/
     az network vnet subnet create \
         --name 'data' \
         --resource-group '<resource group name>' \
-        --vnet-name 'usw2-dev-01' \
+        --vnet-name '<vnet name>' \
         --address-prefix 172.16.30.0/24 \
-        --network-security-group 'usw2-dev-01-data'
+        --network-security-group '<vnet name>-data'
 ```
 
 ### Add 'gateway' subnet and associate corresponding network security group
@@ -79,7 +79,7 @@ Azure network topology reference and guidance: https://docs.microsoft.com/en-us/
     az network vnet subnet create \
         --name 'gatewaysubnet' \
         --resource-group '<resource group name>' \
-        --vnet-name 'usw2-dev-01' \
+        --vnet-name '<vnet name>' \
         --address-prefix 172.16.0.0/24
 ```
 

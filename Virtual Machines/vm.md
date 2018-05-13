@@ -1,18 +1,24 @@
 # Virtual Machine
 
-https://docs.microsoft.com/en-us/cli/azure/vm?view=azure-cli-latest
-
-https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
+Overview: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
 
 ## Create a Ubuntu virtual machine from the marketpalce
 
-### List images and sizes
+### List available images and virtual machine sizes
 
 ```bash
     az vm image list --output table
+```
 
+### List available images and virtual machine sizes for a specific region
+
+```bash
     az vm list-sizes --location westus2 --output table
 ```
+
+### Create a basic virtual machine
+
+The following command will create a virtual machine, with a public IP address
 
 ```bash
     az vm create \
@@ -22,11 +28,17 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/linux/
         --generate-ssh-keys
 ```
 
-```bash
-    sudo apt-get -y install nginx
-```
+## Create and configure a Ubuntu virtual machine from the marketpalce
 
-### cloud-config
+Overview: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/tutorial-automate-vm-deployment
+
+### Create a cloud-config file
+
+How to customize a Linux virtual machine on first boot with cloud init
+
+Create a VM that installs NGINX and runs a simple 'Hello World' Node.js app. The following cloud-init configuration installs the required packages, creates a Node.js app, then initialize and starts the app.
+
+In your current shell, create a file named cloud-init.txt and paste the following configuration. For example, create the file in the Cloud Shell not on your local machine. You can use any editor you wish. Enter sensible-editor cloud-init.txt to create the file and see a list of available editors. Make sure that the whole cloud-init file is copied correctly, especially the first line:
 
 ```yaml
     #cloud-config
